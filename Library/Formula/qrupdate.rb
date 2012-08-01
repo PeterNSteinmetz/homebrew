@@ -10,6 +10,12 @@ class Qrupdate < Formula
   def install
     ENV.fortran
     ENV['PREFIX'] = prefix
+    
+    # remove optimization flags which don't work with gfortran
+    ENV["FCFLAGS"] = ENV["FCFLAGS"].map {|s| s.gsub('-msse4.1', '')}.join(' ')
+    ENV["FCFLAGS"] = ENV["FCFLAGS"].map {|s| s.gsub('-march=core2', '')}.join(' ')
+    ENV["FCFLAGS"] = ENV["FCFLAGS"].map {|s| s.gsub('-w', '')}.join(' ')
+
     inreplace 'Makeconf' do |s|
       # as per the caveats in the gfortran formula:
       s.gsub! /^(FC=).*/, "\\1#{HOMEBREW_PREFIX}/bin/gfortran"
